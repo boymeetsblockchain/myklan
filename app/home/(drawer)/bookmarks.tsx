@@ -1,9 +1,8 @@
 import { View, Text } from 'react-native'
-const search = () => {
+export default function Bookmarks() {
   return (
     <View>
-      <Text>search</Text>
+      <Text>Bookmarks</Text>
     </View>
   )
 }
-export default search

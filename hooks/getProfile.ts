@@ -1,22 +1,25 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Profile } from '../types/profile';
 
-const getUserDetails = async () => {
+const getProfile = async (): Promise<Profile> => {
   try {
+
     const token = await AsyncStorage.getItem('authToken');
     if (!token) {
       throw new Error('No token found');
     }
 
-    const response = await axios.get('https://api.myklan.africa/public/api/user', {
+    const response = await axios.get('https://api.myklan.africa/public/api/profile', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (response.data.status) {
-      const user = response.data.data[0];
-      await AsyncStorage.setItem('user', JSON.stringify(user));
+   
+    if (response.status === 200 && response.data) {
+      const user: Profile = response.data
+      await AsyncStorage.setItem('profile', JSON.stringify(user)); 
       return user;
     } else {
       throw new Error('Failed to fetch user details');
@@ -27,4 +30,4 @@ const getUserDetails = async () => {
   }
 };
 
-export default getUserDetails;
+export default getProfile;

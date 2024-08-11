@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { Text, TextInput, View, Pressable, Alert, ActivityIndicator } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import tw from 'twrnc';
 import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-
+import Toast from 'react-native-toast-message';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -15,7 +15,8 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const router = useRouter()
+  const router = useRouter();
+
   const onSubmit = async () => {
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -27,20 +28,22 @@ export default function RegisterPage() {
 
     try {
       const response = await axios.post("https://api.myklan.africa/public/api/register", {
-        email, name, password, password_confirmation:confirmPassword
+        email, name, password, password_confirmation: confirmPassword
       });
 
       setLoading(false);
 
       if (response.data.success) {
-        Alert.alert('Success', 'Registration successful', [{ text: 'OK', onPress: () => { 
-          router.push('/auth/login')
-         } }]);
+        Toast.show({
+          type: "success",
+          text1: "User successfully registered"
+        });
+        router.push('/auth/login');
       } else {
         setError('Registration failed. Please try again.');
       }
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setLoading(false);
       setError('An error occurred. Please try again.');
     }
@@ -52,49 +55,71 @@ export default function RegisterPage() {
         Register for MyKlan
       </Text>
 
-      {error ? <Text style={tw`text-red-500 flex items-center text-2xl justify-center mb-4`}>
-      <MaterialIcons name="error" size={24} color="red" /> 
-        {error}</Text> : null}
+      {error ? (
+        <View style={tw`bg-red-600 p-4 mb-4 rounded-md w-full flex-row items-center`}>
+          <MaterialIcons name="error" size={24} color="white" />
+          <Text style={tw`text-white ml-2 flex-1`}>
+            {error}
+          </Text>
+        </View>
+      ) : null}
 
-      <TextInput
-        style={tw`bg-gray-800 text-white w-full p-4 mb-4 rounded-md`}
-        placeholder="Name"
-        placeholderTextColor="gray"
-        value={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={tw`bg-gray-800 text-white w-full p-4 mb-4 rounded-md`}
-        placeholder="Email"
-        placeholderTextColor="gray"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={tw`bg-gray-800 text-white w-full p-4 mb-4 rounded-md`}
-        placeholder="Password"
-        placeholderTextColor="gray"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={tw`bg-gray-800 text-white w-full p-4 mb-4 rounded-md`}
-        placeholder="Confirm Password"
-        placeholderTextColor="gray"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
+      <View style={tw`bg-transparent border border-white p-4 mb-4 rounded-md w-full flex-row items-center`}>
+        <MaterialIcons name="person" size={24} color="white" />
+        <TextInput
+          style={tw`text-white ml-2 flex-1`}
+          placeholder="Name"
+          placeholderTextColor="gray"
+          value={name}
+          onChangeText={setName}
+        />
+      </View>
 
-      <Pressable 
+      <View style={tw`bg-transparent border border-white p-4 mb-4 rounded-md w-full flex-row items-center`}>
+        <MaterialIcons name="email" size={24} color="white" />
+        <TextInput
+          style={tw`text-white ml-2 flex-1`}
+          placeholder="Email"
+          placeholderTextColor="gray"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+      </View>
+
+      <View style={tw`bg-transparent border border-white p-4 mb-4 rounded-md w-full flex-row items-center`}>
+        <MaterialIcons name="lock" size={24} color="white" />
+        <TextInput
+          style={tw`text-white ml-2 flex-1`}
+          placeholder="Password"
+          placeholderTextColor="gray"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
+
+      <View style={tw`bg-transparent border border-white p-4 mb-4 rounded-md w-full flex-row items-center`}>
+        <MaterialIcons name="lock" size={24} color="white" />
+        <TextInput
+          style={tw`text-white ml-2 flex-1`}
+          placeholder="Confirm Password"
+          placeholderTextColor="gray"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          secureTextEntry
+        />
+      </View>
+
+      <Pressable
         style={tw`w-full bg-[#ffde59] py-3 flex items-center justify-center rounded-md mb-4`}
         onPress={onSubmit}
         disabled={loading}
       >
-        <Text style={tw`text-center text-black text-xl font-bold`}>{loading ? <ActivityIndicator color={"#fff"} size={"large"}/>  : 'Register'}</Text>
+        <Text style={tw`text-center text-white text-xl font-bold`}>
+          {loading ? <ActivityIndicator color={"#fff"} size={"large"} /> : 'Sign Up'}
+        </Text>
       </Pressable>
 
       <Link href={'/auth/login'}>
